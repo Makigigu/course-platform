@@ -1,0 +1,105 @@
+=========================================================
+คู่มือคำสั่ง AI (Master Prompt Playbook) 
+สำหรับการสร้างโปรเจกต์: SkillNova (Course Platform LMS)
+เป้าหมาย: ใช้คำสั่งเหล่านี้ก็อปปี้วาง เพื่อสร้างโปรเจกต์นี้ใหม่ตั้งแต่ต้นจนจบ
+=========================================================
+
+--- โครงสร้างโปรเจกต์และ Tech Stack ---
+- Framework: Next.js 14 (App Router), React, TypeScript
+- Styling: Tailwind CSS, Lucide React (Icons), Glassmorphism UI
+- Database: PostgreSQL (รันผ่าน Docker)
+- ORM: Prisma
+- Theme: Light Premium (Pastel Purple / Indigo / White)
+
+=========================================================
+PHASE 1: วางโครงสร้างสถาปัตยกรรมและฐานข้อมูล (Architecture & Database)
+=========================================================
+[Prompt 1]
+"Act as an Expert Full-Stack Developer. I need you to architect and build an Online Course Learning Platform (LMS) named 'SkillNova'. 
+1. Initialize a Next.js App Router project with TypeScript and Tailwind CSS.
+2. Set up a PostgreSQL database using docker-compose.yml.
+3. Set up Prisma ORM and create the `schema.prisma`. We need models for:
+   - User (id, email, password, name, role: STUDENT/INSTRUCTOR/ADMIN)
+   - Course (id, title, description, price, thumbnail, instructorId)
+   - Section (id, title, order, courseId)
+   - Lesson (id, title, videoUrl, order, isQuiz, sectionId)
+   - Quiz (id, questions JSON, lessonId)
+   - Enrollment (userId, courseId)
+   - Progress (userId, lessonId, isCompleted)
+   - Certificate (id, certificateUrl, userId, courseId)
+   - Review (rating, comment, userId, courseId)
+4. Create the global layout and apply a Light Premium theme (bg-slate-50, text-slate-900)."
+
+=========================================================
+PHASE 2: ระบบยืนยันตัวตนและจำลองข้อมูล (Authentication & Seeding)
+=========================================================
+[Prompt 2]
+"Create a custom JWT/Cookie-based authentication system for SkillNova:
+1. Create `src/lib/auth.ts` to manage `session_token` cookies securely.
+2. Build interactive `app/login/page.tsx` and `app/register/page.tsx` using Tailwind CSS with beautiful purple accent buttons.
+3. Create API routes `POST /api/auth/login` and `POST /api/auth/register` and `POST /api/auth/logout`.
+4. Create a global `Navbar` component that conditionally renders Login/Register buttons or a User Avatar with a Logout button based on session state.
+5. Write a comprehensive `prisma/seed.ts` script to populate the DB with 1 Admin, 1 Instructor, 1 Student, and at least 7 mock courses across different categories (e.g., Python, UI/UX, Cloud) with sections and lessons."
+
+=========================================================
+PHASE 3: ระบบแสดงคอร์สเรียนและหน้าแรก (Landing Page & Course Discovery)
+=========================================================
+[Prompt 3]
+"Design a premium Landing Page and Course Discovery system in Thai language:
+1. `app/page.tsx`: Build a modern Hero Section using Glassmorphism effects, light gradients (from-indigo-50 via-white to-purple-50). Include a dynamic search bar, Quick Stats (Students, Courses, Certificates), and a grid of 'Popular Courses' fetched from Prisma.
+2. `app/courses/page.tsx`: A page listing all available courses in the database.
+3. `app/courses/[courseId]/page.tsx`: A Course Detail Page. Create a premium layout with the Course Title, Description, Instructor Details, Average Rating, a list of the Syllabus (Sections & Lessons), and a prominent 'ลงทะเบียนเรียน' (Enroll) button.
+4. Create an API route `POST /api/enroll` to handle course enrollment for logged-in students."
+
+=========================================================
+PHASE 4: ห้องเรียนออนไลน์และวิดีโอ (Learning Room & Video Player)
+=========================================================
+[Prompt 4]
+"Build the interactive Learning Room for enrolled students:
+1. `app/courses/[courseId]/learn/layout.tsx`: Create a layout with a left sidebar showing the course curriculum (Sections and Lessons) and a progress bar showing completion percentage.
+2. `app/courses/[courseId]/learn/[lessonId]/page.tsx`: Create the main viewing area. 
+3. Build a `VideoPlayer` client component. When a video reaches the end, it should call an API to mark the lesson as complete.
+4. Create `POST /api/progress/update` to update the `Progress` model for the current user and lesson."
+
+=========================================================
+PHASE 5: ระบบทำแบบทดสอบอัตโนมัติ (Quiz Engine & Auto-Grading)
+=========================================================
+[Prompt 5]
+"Implement the Quiz Engine for lessons marked as `isQuiz: true`:
+1. Build a `QuizPlayer` client component to display multiple-choice questions. It should have styled radio buttons and a 'Submit Quiz' button.
+2. Create `POST /api/quiz/[quizId]/submit`. This API must securely compare the student's answers against the hidden correct answers in the database.
+3. If the score is >= 80%, mark the lesson as completed in the `Progress` model and return a success message."
+
+=========================================================
+PHASE 6: ระบบใบประกาศนียบัตรและแดชบอร์ดนักเรียน (Certificates & Dashboard)
+=========================================================
+[Prompt 6]
+"Build the Student Dashboard and Certificate generation logic:
+1. Update the Quiz Submission API: If a student passes a quiz and their total course progress reaches 100%, automatically generate a `Certificate` record.
+2. `app/dashboard/page.tsx`: Create a Student Dashboard showing two sections: 'คอร์สที่กำลังเรียน' (My Learning) with dynamic progress bars, and 'ใบประกาศของฉัน' (My Certificates).
+3. `app/certificate/[certificateId]/page.tsx`: Create a public, printable certificate verification page. Design it formally with a border, seal, Student Name, Course Title, Issue Date, and a unique ID."
+
+=========================================================
+PHASE 7: ระบบหลังบ้านของผู้สอน (Instructor Dashboard & Curriculum Builder)
+=========================================================
+[Prompt 7]
+"Implement strict Role-Based Access Control and build the Instructor Dashboard:
+1. Secure the `/instructor` and `/admin` routes. Only allow users with `role === 'INSTRUCTOR'` to access the instructor dashboard.
+2. `app/instructor/page.tsx`: Build a dashboard showing the instructor's total students, revenue, and a list of courses they own.
+3. Build an interactive Course Curriculum Builder at `app/instructor/courses/[courseId]/edit/page.tsx`.
+4. The builder must have functional buttons that trigger APIs to:
+   - Create a new Section (`POST /api/courses/[id]/sections`)
+   - Create a new Lesson or Quiz (`POST /api/courses/[id]/sections/[id]/lessons`)
+   - Delete a Course (`DELETE /api/courses/[id]`) with proper cascading deletion.
+   - View a list of enrolled students."
+
+=========================================================
+PHASE 8: การขัดเกลาและแก้ไขจุดบกพร่องขั้นสุดท้าย (Final Polish)
+=========================================================
+[Prompt 8]
+"Perform a final polish on the entire application:
+1. Ensure the entire platform is translated into Thai perfectly.
+2. Standardize the aesthetic to avoid overly dark backgrounds. Use light, vibrant themes (slate-50, indigo gradients) globally.
+3. Fix any layout overlapping issues (like price formatting).
+4. Ensure all Prisma client calls use efficient queries and run `npx tsc --noEmit` to verify there are absolutely no TypeScript errors.
+5. Create a clean dropdown menu for user profiles in the Navbar."
